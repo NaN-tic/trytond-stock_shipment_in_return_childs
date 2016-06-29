@@ -15,10 +15,13 @@ class ShipmentInReturn:
         super(ShipmentInReturn, cls).__setup__()
         new_domain = []
         for clause in cls.moves.domain:
-            if clause[0] == 'from_location':
-                new_clause = [
-                    ('from_location', 'child_of', Eval('from_location'),
-                    'parent')]
+            if isinstance(clause, (list, tuple)):
+                if clause[0] == 'from_location':
+                    new_clause = [
+                        ('from_location', 'child_of', Eval('from_location'),
+                        'parent')]
+                else:
+                    new_clause = clause
             else:
                 new_clause = clause
             new_domain.append(new_clause)
