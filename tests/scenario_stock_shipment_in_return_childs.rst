@@ -12,6 +12,8 @@ Imports::
     >>> from dateutil.relativedelta import relativedelta
     >>> from decimal import Decimal
     >>> from proteus import config, Model, Wizard
+    >>> from trytond.modules.company.tests.tools import create_company, \
+    ...     get_company
     >>> today = datetime.date.today()
     >>> yesterday = today - relativedelta(days=1)
 
@@ -20,55 +22,26 @@ Create database::
     >>> config = config.set_trytond()
     >>> config.pool.test = True
 
-Install stock Module::
+Install stock_shipment_in_return_childs Module::
 
-    >>> Module = Model.get('ir.module.module')
+    >>> Module = Model.get('ir.module')
     >>> module, = Module.find([('name', '=', 'stock_shipment_in_return_childs')])
     >>> module.click('install')
-    >>> Wizard('ir.module.module.install_upgrade').execute('upgrade')
+    >>> Wizard('ir.module.install_upgrade').execute('upgrade')
 
 Create company::
 
-    >>> Currency = Model.get('currency.currency')
-    >>> CurrencyRate = Model.get('currency.currency.rate')
-    >>> Company = Model.get('company.company')
-    >>> Party = Model.get('party.party')
-    >>> company_config = Wizard('company.company.config')
-    >>> company_config.execute('company')
-    >>> company = company_config.form
-    >>> party = Party(name='Dunder Mifflin')
-    >>> party.save()
-    >>> company.party = party
-    >>> currencies = Currency.find([('code', '=', 'USD')])
-    >>> if not currencies:
-    ...     currency = Currency(name='U.S. Dollar', symbol='$', code='USD',
-    ...         rounding=Decimal('0.01'), mon_grouping='[3, 3, 0]',
-    ...         mon_decimal_point='.', mon_thousands_sep=',')
-    ...     currency.save()
-    ...     CurrencyRate(date=today + relativedelta(month=1, day=1),
-    ...         rate=Decimal('1.0'), currency=currency).save()
-    ... else:
-    ...     currency, = currencies
-    >>> company.currency = currency
-    >>> company_config.execute('add')
-    >>> company, = Company.find()
-
-Reload the context::
-
-    >>> User = Model.get('res.user')
-    >>> config._context = User.get_preferences(True, config.context)
+    >>> _ = create_company()
+    >>> company = get_company()
+    >>> party = company.party
 
 Create customer::
 
     >>> Party = Model.get('party.party')
     >>> customer = Party(name='Customer')
     >>> customer.save()
-
-Create category::
-
-    >>> ProductCategory = Model.get('product.category')
-    >>> category = ProductCategory(name='Category')
-    >>> category.save()
+    >>> supplier = Party(name='Supplier')
+    >>> supplier.save()
 
 Create product::
 
@@ -79,7 +52,6 @@ Create product::
     >>> product = Product()
     >>> template = ProductTemplate()
     >>> template.name = 'Product'
-    >>> template.category = category
     >>> template.default_uom = unit
     >>> template.type = 'goods'
     >>> template.list_price = Decimal('20')
@@ -103,6 +75,7 @@ Create a shipment in return for storage location::
 
     >>> ShipmentInReturn = Model.get('stock.shipment.in.return')
     >>> shipment = ShipmentInReturn()
+    >>> shipment.supplier = supplier
     >>> shipment.from_location = storage_loc
     >>> shipment.to_location = supplier_loc
     >>> move = shipment.moves.new()
@@ -127,9 +100,7 @@ Make 1 unit of the product available on child location::
     >>> incoming_move.to_location = child_loc
     >>> incoming_move.planned_date = today
     >>> incoming_move.effective_date = today
-    >>> incoming_move.company = company
     >>> incoming_move.unit_price = Decimal('1')
-    >>> incoming_move.currency = currency
     >>> incoming_move.click('do')
 
 Now it picks the unit available from child location::
