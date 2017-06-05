@@ -8,17 +8,16 @@ from trytond.tests.test_tryton import doctest_setup, doctest_teardown
 from trytond.tests.test_tryton import doctest_checker
 
 
-class TestCase(ModuleTestCase):
-    'Test module'
+class TestStockShipmentInReturnChildsCase(unittest.TestCase):
     module = 'stock_shipment_in_return_childs'
 
 
 def suite():
     suite = trytond.tests.test_tryton.suite()
-    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestCase))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(
+            TestStockShipmentInReturnChildsCase))
     suite.addTests(doctest.DocFileSuite(
             'scenario_stock_shipment_in_return_childs.rst',
             setUp=doctest_setup, tearDown=doctest_teardown, encoding='utf-8',
-            checker=doctest_checker,
             optionflags=doctest.REPORT_ONLY_FIRST_FAILURE))
     return suite
