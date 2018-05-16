@@ -11,21 +11,17 @@ Imports::
     >>> import datetime
     >>> from dateutil.relativedelta import relativedelta
     >>> from decimal import Decimal
+    >>> from trytond.tests.tools import activate_modules
     >>> from proteus import config, Model, Wizard
+    >>> from trytond.modules.company.tests.tools import create_company, \
+    ...     get_company
     >>> today = datetime.date.today()
     >>> yesterday = today - relativedelta(days=1)
 
-Create database::
+Install product_cost_plan Module::
 
-    >>> config = config.set_trytond()
-    >>> config.pool.test = True
+    >>> config = activate_modules('stock_shipment_in_return_childs')
 
-Install stock Module::
-
-    >>> Module = Model.get('ir.module.module')
-    >>> module, = Module.find([('name', '=', 'stock_shipment_in_return_childs')])
-    >>> module.click('install')
-    >>> Wizard('ir.module.module.install_upgrade').execute('upgrade')
 
 Create company::
 
@@ -54,7 +50,6 @@ Create product::
     >>> product = Product()
     >>> template = ProductTemplate()
     >>> template.name = 'Product'
-    >>> template.category = category
     >>> template.default_uom = unit
     >>> template.type = 'goods'
     >>> template.list_price = Decimal('20')
@@ -105,7 +100,6 @@ Make 1 unit of the product available on child location::
     >>> incoming_move.effective_date = today
     >>> incoming_move.company = company
     >>> incoming_move.unit_price = Decimal('1')
-    >>> incoming_move.currency = currency
     >>> incoming_move.click('do')
 
 Now it picks the unit available from child location::
