@@ -6,8 +6,7 @@ from trytond.pyson import Eval
 __all__ = ['ShipmentInReturn']
 
 
-class ShipmentInReturn:
-    __metaclass__ = PoolMeta
+class ShipmentInReturn(metaclass=PoolMeta):
     __name__ = 'stock.shipment.in.return'
 
     @classmethod

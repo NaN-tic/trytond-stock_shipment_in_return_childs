@@ -85,7 +85,7 @@ Create a shipment in return for storage location::
     >>> shipment.click('assign_try')
     False
     >>> shipment.state
-    u'waiting'
+    'waiting'
 
 Make 1 unit of the product available on child location::
 
@@ -107,7 +107,7 @@ Now it picks the unit available from child location::
     >>> shipment.click('assign_try')
     True
     >>> shipment.state
-    u'assigned'
+    'assigned'
     >>> move, = shipment.moves
     >>> move.from_location == child_loc
     True
