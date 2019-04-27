@@ -81,6 +81,7 @@ Create a shipment in return for storage location::
     >>> move.quantity = 1
     >>> move.from_location = storage_loc
     >>> move.to_location = supplier_loc
+    >>> move.unit_price = Decimal(0)
     >>> shipment.click('wait')
     >>> shipment.click('assign_try')
     False
