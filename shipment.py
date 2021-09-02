@@ -1,6 +1,7 @@
 # The COPYRIGHT file at the top level of this repository contains the full
 # copyright notices and license terms.
 from trytond.pool import Pool, PoolMeta
+from trytond.model import dualmethod
 from trytond.pyson import Eval
 
 __all__ = ['ShipmentInReturn']
@@ -28,7 +29,7 @@ class ShipmentInReturn(metaclass=PoolMeta):
         readonly = cls.moves.states.get('readonly')
         cls.moves.states['readonly'] = readonly & (Eval('state') != 'waiting')
 
-    @classmethod
+    @dualmethod
     def assign_try(cls, shipments):
         pool = Pool()
         Move = pool.get('stock.move')
