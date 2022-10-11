@@ -82,6 +82,7 @@ Create a shipment in return for storage location::
     >>> move.from_location = storage_loc
     >>> move.to_location = supplier_loc
     >>> move.unit_price = Decimal(0)
+    >>> move.currency = company.currency
     >>> shipment.click('wait')
     >>> shipment.click('assign_try')
     False
@@ -101,6 +102,7 @@ Make 1 unit of the product available on child location::
     >>> incoming_move.effective_date = today
     >>> incoming_move.company = company
     >>> incoming_move.unit_price = Decimal('1')
+    >>> incoming_move.currency = company.currency
     >>> incoming_move.click('do')
 
 Now it picks the unit available from child location::
